@@ -1,0 +1,15 @@
+BACKEND
+
+to setup backend 
+
+1 - on terminal , npm install
+2 - then run - npm start 
+
+server starts
+
+
+FRONTEND 
+
+1 - on terminal ,  npm install
+2 - then run - npm run dev
+
