@@ -1,6 +1,7 @@
 import { useState } from "react";
 import axios from "axios"; 
 import { useAuthContext } from "../hooks/useAuthContext";
+import { GoogleLogin } from "@react-oauth/google";
 
 // Error component
 const ErrorMessage = ({ message }) => (
@@ -13,17 +14,17 @@ const ErrorMessage = ({ message }) => (
 
 export const Login = () => {
   const [isLogin, setIsLogin] = useState(true);
-  const {dispatch} = useAuthContext();
+  const { dispatch } = useAuthContext();
   const [formData, setFormData] = useState({
     username: "",
     email: "",
     password: "",
   });
-  const [error, setError] = useState(""); // Error state
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
-    setError(""); // Clear error on input change
+    setError("");
   };
 
   // Login API
@@ -53,6 +54,23 @@ export const Login = () => {
     } catch (err) {
       setError(err.response?.data?.error || "Signup failed. Please try again.");
     }
+  };
+
+  // Google Auth API
+  const handleGoogleSuccess = async (credentialResponse) => {
+    try {
+      const res = await axios.post(`${import.meta.env.VITE_API_URL}/googleauth`, {
+        token: credentialResponse.credential,
+      });
+      dispatch({ type: "LOGIN", payload: res.data });
+    } catch (err) {
+      console.log(err)
+      setError("Google sign-in failed. Please try again.");
+    }
+  };
+
+  const handleGoogleFailure = () => {
+    setError("Google sign-in was cancelled or failed.");
   };
 
   return (
@@ -107,12 +125,20 @@ export const Login = () => {
           </button>
         </form>
 
+        {/* Google Login */}
+        <div className="mt-6 flex justify-center">
+          <GoogleLogin
+            onSuccess={handleGoogleSuccess}
+            onError={handleGoogleFailure}
+          />
+        </div>
+
         <p className="text-center mt-4 text-gray-600">
-          {isLogin ? "Don’t have an account?" : "Already have an account?"}{" "}
+          {isLogin ? "Don't have an account?" : "Already have an account?"}{" "}
           <button
             onClick={() => {
               setIsLogin(!isLogin);
-              setError(""); // Clear error on toggle
+              setError("");
             }}
             className="text-orange-500 font-semibold hover:underline"
           >
@@ -122,4 +148,4 @@ export const Login = () => {
       </div>
     </div>
   );
-}
+};

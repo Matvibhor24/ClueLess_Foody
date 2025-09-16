@@ -1,6 +1,7 @@
 const express = require("express")
 const mongoose = require("mongoose")
 const cors = require("cors")
+const authCheck = require("./middleware/authCheck")
 require("dotenv").config()
 
 const UserRoutes = require("./routes/UserRoutes")
