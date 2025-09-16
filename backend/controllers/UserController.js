@@ -1,6 +1,7 @@
 const User = require("../models/UserModel")
 const bcrypt = require("bcrypt")
 const {validationResult}  = require("express-validator")
+const jwt = require("jsonwebtoken")
 
 const loginController = async (req , res) => {
     const {email, password} = req.body;
@@ -33,8 +34,9 @@ const loginController = async (req , res) => {
         return
     }
 
+    const token = jwt.sign({_id : existingUser._id}, process.env.SECRET_STRING) ;
 
-    res.status(200).json({ username : existingUser.username , email : existingUser.email})
+    res.status(200).json({ username : existingUser.username , email : existingUser.email , token})
 }
 
 
@@ -84,8 +86,9 @@ const signupController = async (req , res) => {
         return 
     }
 
-    res.status(201).json({username : newUser.username , email : newUser.email})  
-}
+     const token = jwt.sign({_id : existingUser._id}, process.env.SECRET_STRING) 
 
+    res.status(201).json({username : newUser.username , email : newUser.email , token })  
+}
 
 module.exports = {loginController , signupController}
